@@ -1,5 +1,6 @@
 from typing import Union, Optional
 
+import shelve
 import torch
 from uuid import uuid4
 from torch import autocast
@@ -28,8 +29,22 @@ def drawing_pictures(prompt: Optional[str] = None):
     else:
         image = app.pipe(prompt).images[0]
 
-    image_path = f"out/{uuid4()}.png"
+    image_id = uuid4()
+    image_path = f"out/{image_id}.png"
     image.save(image_path)
     with open(image_path, 'rb') as f:
         image_bytes = f.read()
+
+    if prompt:
+        with shelve.open("prompts") as db:
+            db[image_id] = prompt
+        return {"status": "success"}
+    else:
+        return {"error": "No prompt provided"}
+
     return Response(content=image_bytes, media_type="image/png")
+
+@app.get("/prompts")
+def list_prompts():
+    with shelve.open("prompts") as db:
+        return list(db.values())
