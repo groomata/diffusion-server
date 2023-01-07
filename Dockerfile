@@ -12,9 +12,9 @@ RUN apt update && \
     curl \
     ca-certificates \
     libsndfile1-dev \
-    python3.10 \
+    python3.9 \
     python3-pip \
-    python3.10-venv && \
+    python3.9-venv && \
     rm -rf /var/lib/apt/lists
 
 RUN curl -sSL https://install.python-poetry.org | python3 - --version 1.2.2
